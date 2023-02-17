@@ -9,7 +9,6 @@ import { AddPaymentCard } from "../components/AddPaymentCard";
 
 export const Home = () => {
   const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
   const [docId, setDocId] = useState("");
   const [payments, setPayments] = useState([]);
   const [user, loading, error] = useAuthState(auth);
@@ -21,9 +20,7 @@ export const Home = () => {
       const doc = await getDocs(q);
       const data = doc.docs[0].data();
       setName(() => data.name);
-      setEmail(() => data.email);
       setDocId(() => doc.docs[0].id);
-      //   fetchUserDocs();
     } catch (err) {
       console.error(err);
       alert("An error occured while fetching user data");
@@ -35,10 +32,10 @@ export const Home = () => {
       const q = query(collection(db, "payment"));
       const doc = await getDocs(q);
       let userDocs = doc.docs.filter(
-        (d) => d.data().user.path === `users/${docId}`
+        (d) => d.data().user === `/users/${docId}` && !d.data().isDeleted
       );
       userDocs = userDocs.map((d) => d.data());
-      if (payments.length === 0) setPayments((s) => [...s, ...userDocs]);
+      setPayments((s) => [...userDocs]);
     } catch (err) {
       console.error(err);
       alert("An error occured while fetching user documents");
@@ -64,9 +61,9 @@ export const Home = () => {
   };
 
   return (
-    <div className="w-full h-full absolute bg-slate-400">
+    <div className="w-full min-h-screen	 absolute bg-slate-400">
       <header className="w-full bg-slate-800 py-2 text-lg text-gray-100 capitaliz flex justify-between items-center">
-        <span className="pl-6">Welcome {name.split(" ")[0]}</span>
+        <span className="pl-6">Welcome, {name.split(" ")[0]}</span>
         <button onClick={() => handleClick()}>
           <img
             className="my-4 mr-8"
@@ -81,12 +78,15 @@ export const Home = () => {
           />
         </button>
       </header>
-      <main className="w-full">
+      <main className="w-full mb-4">
         <div className="w-10/12 mx-auto mt-4 flex gap-8 flex-wrap">
           {payments.map((payment) => (
             <PaymentCard props={payment} key={payment.title} />
           ))}
-          <AddPaymentCard />
+          <AddPaymentCard
+            docId={`users/${docId}`}
+            fetchUserDocs={fetchUserDocs}
+          />
         </div>
       </main>
     </div>

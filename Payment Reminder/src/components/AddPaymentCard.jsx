@@ -1,7 +1,32 @@
-import { useState } from "react";
+import { addDoc, collection } from "firebase/firestore";
+import { db } from "../firebase";
+import { useState, useRef } from "react";
 
-export const AddPaymentCard = ({}) => {
+export const AddPaymentCard = ({ docId, fetchUserDocs }) => {
   const [showModal, setShowModal] = useState(false);
+  const titleRef = useRef("");
+  const descRef = useRef("");
+  const paymentRef = useRef("");
+  const dateRef = useRef("");
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setShowModal(false);
+    console.log(docId);
+    try {
+      const res = await addDoc(collection(db, "payment"), {
+        title: titleRef.current,
+        description: descRef.current,
+        paymentStatus: paymentRef.current === "paymentStatus" ? true : false,
+        dueDate: new Date(dateRef.current),
+        user: `/${docId}`,
+        isDeleted: false,
+      });
+      fetchUserDocs();
+      console.log(res);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   return (
     <div className="max-sm:w-full max-md:w-5/12 max-lg:w-2/6 max-xl:w-2/6 max-2xl:w-3/12 2xl:w-3/12 flex flex-col border-2 border-black rounded p-4 gap-2">
@@ -13,10 +38,13 @@ export const AddPaymentCard = ({}) => {
           <div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
             <div className="relative w-auto my-6 mx-auto max-w-3xl">
               {/*content*/}
-              <div className="border-0 rounded-lg shadow-lg relative flex flex-col w-auto max-sm:w-11/12 mx-auto bg-gray-700 outline-none focus:outline-none">
+              <form
+                className="border-0 rounded-lg shadow-lg relative flex flex-col w-auto max-sm:w-11/12 mx-auto bg-gray-700 outline-none focus:outline-none"
+                onSubmit={(e) => handleSubmit(e)}
+              >
                 {/*header*/}
-                <div className="flex items-start justify-between p-5 pr-20 border-b border-solid border-slate-200 rounded-t text-white">
-                  <h3 className="text-3xl font-semibold">
+                <div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t text-white">
+                  <h3 className="text-3xl font-semibold mr-40">
                     Create a New Payment
                   </h3>
                 </div>
@@ -35,6 +63,8 @@ export const AddPaymentCard = ({}) => {
                       className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="My First Payment"
                       required
+                      ref={titleRef}
+                      onChange={(e) => (titleRef.current = e.target.value)}
                     />
                   </div>
                   <div className="mb-6">
@@ -49,6 +79,8 @@ export const AddPaymentCard = ({}) => {
                       id="description"
                       className=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                       placeholder="Once upon a time in a descriptive payment land"
+                      ref={descRef}
+                      onChange={(e) => (descRef.current = e.target.value)}
                       required
                     />
                   </div>
@@ -79,6 +111,8 @@ export const AddPaymentCard = ({}) => {
                         type="date"
                         className="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full pl-10 p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                         placeholder="Select date"
+                        onChange={(e) => (dateRef.current = e.target.value)}
+                        ref={dateRef}
                       />
                     </div>
                     <div className="text-white mt-4 -mb-10">
@@ -86,6 +120,8 @@ export const AddPaymentCard = ({}) => {
                         type="checkbox"
                         name="payment"
                         value="paymentStatus"
+                        onChange={(e) => (paymentRef.current = e.target.value)}
+                        ref={paymentRef}
                       />
                       <label htmlFor="payment"> Payment Completed</label>
                     </div>
@@ -103,13 +139,12 @@ export const AddPaymentCard = ({}) => {
                   </button>
                   <button
                     className="bg-emerald-500 text-white active:bg-emerald-600 font-bold uppercase text-sm px-6 py-3 rounded shadow hover:shadow-lg outline-none focus:outline-none mr-1 mb-1 ease-linear transition-all duration-150"
-                    type="button"
-                    onClick={() => setShowModal(false)}
+                    type="submit"
                   >
-                    Save Changes
+                    Submit
                   </button>
                 </div>
-              </div>
+              </form>
             </div>
           </div>
           <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
