@@ -1,8 +1,12 @@
 import { db } from "../firebase";
 import { doc, setDoc } from "firebase/firestore";
+import { EditPaymentCard } from "./EditPaymentCard";
+import { useState } from "react";
 
 export const PaymentCard = ({ props, fetchUserDocs }) => {
   const { title, description, dueDate, paymentStatus } = props;
+  const [showModal, setShowModal] = useState(false);
+
   const transformedDate = new Date(dueDate?.seconds)
     .toString()
     .split(" GMT")[0];
@@ -28,7 +32,10 @@ export const PaymentCard = ({ props, fetchUserDocs }) => {
       </h4>
       <p>{transformedDate}</p>
       <div className="w-full flex justify-between mt-2">
-        <button className="bg-green-600 border-black border-2 py-1 px-6 rounded">
+        <button
+          className="bg-green-600 border-black border-2 py-1 px-6 rounded"
+          onClick={() => setShowModal((s) => !s)}
+        >
           Edit
         </button>
         <button
@@ -38,6 +45,12 @@ export const PaymentCard = ({ props, fetchUserDocs }) => {
           Delete
         </button>
       </div>
+      <EditPaymentCard
+        showModal={showModal}
+        setShowModal={setShowModal}
+        props={props}
+        fetchUserDocs={fetchUserDocs}
+      />
     </div>
   );
 };

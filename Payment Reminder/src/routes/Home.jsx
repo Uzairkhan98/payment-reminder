@@ -86,7 +86,7 @@ export const Home = () => {
           {payments.map((payment) => (
             <PaymentCard
               props={payment}
-              key={payment.title}
+              key={payment.id}
               fetchUserDocs={fetchUserDocs}
             />
           ))}
