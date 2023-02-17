@@ -1,21 +1,14 @@
 import { useState } from "react";
 import { LoginForm } from "../components/LoginForm";
 import { RegisterUserForm } from "../components/RegisterUserForm";
-import { ForgetPasswordForm } from "../components/ForgetPasswordForm";
 
 export const Login = () => {
-  const [forgetPassword, setForgetPassword] = useState(false);
   const [registerUser, setRegisterUser] = useState(false);
 
-  const content = forgetPassword ? (
-    <ForgetPasswordForm setForgetPassword={setForgetPassword} />
-  ) : registerUser ? (
+  const content = registerUser ? (
     <RegisterUserForm setRegisterUser={setRegisterUser} />
   ) : (
-    <LoginForm
-      setForgetPassword={setForgetPassword}
-      setRegisterUser={setRegisterUser}
-    />
+    <LoginForm setRegisterUser={setRegisterUser} />
   );
 
   return (
