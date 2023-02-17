@@ -13,6 +13,7 @@ import {
   getAuth,
   signInWithEmailAndPassword,
   createUserWithEmailAndPassword,
+  signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
 // import * as admin from "firebase-admin";
