@@ -1,4 +1,4 @@
-import { addDoc, collection } from "firebase/firestore";
+import { setDoc, doc } from "firebase/firestore";
 import { db } from "../firebase";
 import { useState } from "react";
 
@@ -21,26 +21,34 @@ export const EditPaymentCard = ({
 
   var finalDate = year + "-" + month + "-" + day;
   const [date, setDate] = useState(finalDate);
-  console.log(date);
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowModal(false);
-    console.log(docId);
     try {
-      const res = await addDoc(collection(db, "payment"), {
-        title: titleRef.current,
-        description: descRef.current,
-        paymentStatus: paymentRef.current === "paymentStatus" ? true : false,
-        dueDate: new Date(dateRef.current),
-        user: `/${docId}`,
-        isDeleted: false,
-      });
+      const changingData = {
+        title,
+        description: desc,
+        paymentStatus,
+        dueDate: new Date(date),
+      };
+      const docRef = doc(db, "payment", props.id);
+
+      const res = await setDoc(docRef, changingData, { merge: true });
       fetchUserDocs();
       console.log(res);
     } catch (e) {
       console.error(e);
     }
   };
+
+  //   setDoc(docRef, { isDeleted: true }, { merge: true })
+  //     .then((docRef) => {
+  //       console.log("Deletion successful");
+  //       fetchUserDocs();
+  //     })
+  //     .catch((error) => {
+  //       console.log(error);
+  //     });
 
   return (
     <div>
