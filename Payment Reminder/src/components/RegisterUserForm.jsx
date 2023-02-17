@@ -1,12 +1,14 @@
 import { useRef, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
 import { registerWithEmailAndPassword, auth } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 export const RegisterUserForm = ({ setRegisterUser }) => {
   const nameRef = useRef("");
   const emailRef = useRef("");
   const passwordRef = useRef("");
   const [user, loading, error] = useAuthState(auth);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (loading) return;
@@ -14,14 +16,16 @@ export const RegisterUserForm = ({ setRegisterUser }) => {
     if (error) console.error(error);
   }, [user, loading, error]);
 
-  const registerUser = () => {
+  const registerUser = async (e) => {
+    e.preventDefault();
     console.log(nameRef.current, emailRef.current, passwordRef.current);
     if (!nameRef.current) alert("Please enter name");
-    registerWithEmailAndPassword(
+    const res = await registerWithEmailAndPassword(
       nameRef.current,
       emailRef.current,
       passwordRef.current
     );
+    if (!!res?.path) navigate("Dashboard");
   };
 
   return (
@@ -29,7 +33,7 @@ export const RegisterUserForm = ({ setRegisterUser }) => {
       <h1 className="text-3xl font-semibold text-center text-slate-700 ">
         Sign Up
       </h1>
-      <form className="mt-6">
+      <form className="mt-6" onSubmit={(e) => registerUser(e)}>
         <div className="mb-2">
           <label
             htmlFor="name"
@@ -81,7 +85,7 @@ export const RegisterUserForm = ({ setRegisterUser }) => {
         <div className="mt-6">
           <button
             className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-slate-700 rounded-md hover:bg-slate-600 focus:outline-none focus:bg-slate-600"
-            onClick={() => registerUser()}
+            type="submit"
           >
             Register
           </button>

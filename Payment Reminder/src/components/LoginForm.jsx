@@ -1,17 +1,18 @@
 import { useRef } from "react";
-import { useAuthState } from "react-firebase-hooks/auth";
 import { logInWithEmailAndPassword } from "../firebase";
+import { useNavigate } from "react-router-dom";
 
 export const LoginForm = ({ setForgetPassword, setRegisterUser }) => {
   const emailRef = useRef("");
   const passwordRef = useRef("");
-
-  const LoginUser = async () => {
+  const navigate = useNavigate();
+  const LoginUser = async (e) => {
+    e.preventDefault();
     const res = await logInWithEmailAndPassword(
       emailRef.current,
       passwordRef.current
     );
-    console.log(emailRef.current, passwordRef.current, res);
+    if (!!res?.user?.accessToken) navigate("Dashboard");
   };
 
   return (
@@ -19,7 +20,7 @@ export const LoginForm = ({ setForgetPassword, setRegisterUser }) => {
       <h1 className="text-3xl font-semibold text-center text-slate-700 ">
         Sign in
       </h1>
-      <form className="mt-6">
+      <form className="mt-6" onSubmit={(e) => LoginUser(e)}>
         <div className="mb-2">
           <label
             htmlFor="email"
@@ -62,7 +63,7 @@ export const LoginForm = ({ setForgetPassword, setRegisterUser }) => {
         <div className="mt-6">
           <button
             className="w-full px-4 py-2 tracking-wide text-white transition-colors duration-200 transform bg-slate-700 rounded-md hover:bg-slate-600 focus:outline-none focus:bg-slate-600"
-            onClick={() => LoginUser()}
+            type="submit"
           >
             Login
           </button>

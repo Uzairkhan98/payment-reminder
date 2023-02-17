@@ -4,11 +4,16 @@ import ReactDOM from "react-dom/client";
 import "./index.css";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Login } from "./routes/Login";
+import { Home } from "./routes/Home";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <Login />,
+  },
+  {
+    path: "Dashboard",
+    element: <Home />,
   },
 ]);
 

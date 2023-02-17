@@ -15,6 +15,7 @@ import {
   createUserWithEmailAndPassword,
   sendPasswordResetEmail,
 } from "firebase/auth";
+// import * as admin from "firebase-admin";
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
@@ -39,6 +40,7 @@ const auth = getAuth(app);
 
 const logInWithEmailAndPassword = async (email, password) => {
   try {
+    console.log(email, password);
     return await signInWithEmailAndPassword(auth, email, password);
   } catch (err) {
     console.error(err);
@@ -50,13 +52,14 @@ const registerWithEmailAndPassword = async (name, email, password) => {
   try {
     const res = await createUserWithEmailAndPassword(auth, email, password);
     const user = res.user;
-    await addDoc(collection(db, "users"), {
+    return await addDoc(collection(db, "users"), {
       uid: user.uid,
       name,
       authProvider: "local",
       email,
     });
   } catch (err) {
+    console.error("Coming to this error");
     console.error(err);
     alert(err.message);
   }
