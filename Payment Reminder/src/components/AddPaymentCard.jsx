@@ -11,7 +11,6 @@ export const AddPaymentCard = ({ docId, fetchUserDocs }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setShowModal(false);
-    console.log(docId);
     try {
       const res = await addDoc(collection(db, "payment"), {
         title: titleRef.current,
@@ -22,16 +21,20 @@ export const AddPaymentCard = ({ docId, fetchUserDocs }) => {
         isDeleted: false,
       });
       fetchUserDocs();
-      console.log(res);
     } catch (e) {
       console.error(e);
     }
   };
 
   return (
-    <div className="max-sm:w-full max-md:w-5/12 max-lg:w-2/6 max-xl:w-2/6 max-2xl:w-3/12 2xl:w-3/12 flex flex-col border-2 border-black rounded p-4 gap-2">
-      <button className="mx-auto my-auto" onClick={() => setShowModal(true)}>
-        <h1 className="text-xl uppercase font-extrabold">add payment</h1>
+    <>
+      <button
+        onClick={() => setShowModal(true)}
+        className="bg-slate-700 hover:bg-slate-600 max-sm:w-11/12 max-md:w-5/12 max-lg:w-2/6 max-xl:w-2/6 max-2xl:w-3/12 2xl:w-3/12 flex flex-col border-2 border-black rounded p-4 gap-2"
+      >
+        <h1 className="text-xl uppercase font-extrabold mx-auto my-auto">
+          add payment
+        </h1>
       </button>
       {showModal ? (
         <>
@@ -150,6 +153,6 @@ export const AddPaymentCard = ({ docId, fetchUserDocs }) => {
           <div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
         </>
       ) : null}
-    </div>
+    </>
   );
 };
