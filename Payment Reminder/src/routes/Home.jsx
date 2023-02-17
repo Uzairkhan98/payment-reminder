@@ -34,7 +34,10 @@ export const Home = () => {
       let userDocs = doc.docs.filter(
         (d) => d.data().user === `/users/${docId}` && !d.data().isDeleted
       );
-      userDocs = userDocs.map((d) => d.data());
+      userDocs = userDocs.map((d) => {
+        const res = d.data();
+        return { ...res, id: d.id };
+      });
       setPayments((s) => [...userDocs]);
     } catch (err) {
       console.error(err);
@@ -81,7 +84,11 @@ export const Home = () => {
       <main className="w-full mb-4">
         <div className="w-10/12 mx-auto mt-4 flex gap-8 flex-wrap">
           {payments.map((payment) => (
-            <PaymentCard props={payment} key={payment.title} />
+            <PaymentCard
+              props={payment}
+              key={payment.title}
+              fetchUserDocs={fetchUserDocs}
+            />
           ))}
           <AddPaymentCard
             docId={`users/${docId}`}

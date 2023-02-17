@@ -1,8 +1,24 @@
-export const PaymentCard = ({ props }) => {
-  const { title, description, dueDate, isDeleted, paymentStatus } = props;
+import { db } from "../firebase";
+import { doc, setDoc } from "firebase/firestore";
+
+export const PaymentCard = ({ props, fetchUserDocs }) => {
+  const { title, description, dueDate, paymentStatus } = props;
   const transformedDate = new Date(dueDate?.seconds)
     .toString()
     .split(" GMT")[0];
+
+  const handleDelete = () => {
+    const docRef = doc(db, "payment", props.id);
+    setDoc(docRef, { isDeleted: true }, { merge: true })
+      .then((docRef) => {
+        console.log("Deletion successful");
+        fetchUserDocs();
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+  };
+
   return (
     <div className="max-sm:w-full max-md:w-5/12 max-lg:w-2/6 max-xl:w-2/6 max-2xl:w-3/12 2xl:w-3/12 flex flex-col border-2 border-black rounded p-4 gap-2">
       <h3 className="text-2xl font-bold">{title}</h3>
@@ -15,7 +31,10 @@ export const PaymentCard = ({ props }) => {
         <button className="bg-green-600 border-black border-2 py-1 px-6 rounded">
           Edit
         </button>
-        <button className="bg-red-500 border-black border-2 py-1 px-6 rounded">
+        <button
+          className="bg-red-500 border-black border-2 py-1 px-6 rounded"
+          onClick={() => handleDelete()}
+        >
           Delete
         </button>
       </div>
