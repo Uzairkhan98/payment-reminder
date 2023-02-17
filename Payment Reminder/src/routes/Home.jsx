@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { auth, db, logout } from "../firebase";
 import Powerbutton from "../../src/power-icon.svg";
 import { PaymentCard } from "../components/PaymentCard";
+import { AddPaymentCard } from "../components/AddPaymentCard";
 
 export const Home = () => {
   const [name, setName] = useState("");
@@ -81,10 +82,11 @@ export const Home = () => {
         </button>
       </header>
       <main className="w-full">
-        <div className="w-10/12 mx-auto mt-4">
+        <div className="w-10/12 mx-auto mt-4 flex gap-8 flex-wrap">
           {payments.map((payment) => (
             <PaymentCard props={payment} key={payment.title} />
           ))}
+          <AddPaymentCard />
         </div>
       </main>
     </div>
