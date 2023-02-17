@@ -4,12 +4,16 @@ import { query, collection, getDocs, where } from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
 import { auth, db, logout } from "../firebase";
 import Powerbutton from "../../src/power-icon.svg";
+import { PaymentCard } from "../components/PaymentCard";
 
 export const Home = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
+  const [docId, setDocId] = useState("");
+  const [payments, setPayments] = useState([]);
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
+
   const fetchUserName = async () => {
     try {
       const q = query(collection(db, "users"), where("uid", "==", user?.uid));
@@ -17,12 +21,33 @@ export const Home = () => {
       const data = doc.docs[0].data();
       setName(() => data.name);
       setEmail(() => data.email);
-      console.log(data);
+      setDocId(() => doc.docs[0].id);
+      //   fetchUserDocs();
     } catch (err) {
       console.error(err);
       alert("An error occured while fetching user data");
     }
   };
+
+  const fetchUserDocs = async () => {
+    try {
+      const q = query(collection(db, "payment"));
+      const doc = await getDocs(q);
+      let userDocs = doc.docs.filter(
+        (d) => d.data().user.path === `users/${docId}`
+      );
+      userDocs = userDocs.map((d) => d.data());
+      if (payments.length === 0) setPayments((s) => [...s, ...userDocs]);
+    } catch (err) {
+      console.error(err);
+      alert("An error occured while fetching user documents");
+    }
+  };
+
+  useEffect(() => {
+    fetchUserDocs();
+  }, [docId]);
+
   useEffect(() => {
     if (loading) return;
     if (!user) return navigate("/");
@@ -39,7 +64,7 @@ export const Home = () => {
 
   return (
     <div className="w-full h-full absolute bg-slate-400">
-      <header className="w-full bg-slate-800 py-4 text-lg text-gray-100 capitaliz flex justify-between items-center">
+      <header className="w-full bg-slate-800 py-2 text-lg text-gray-100 capitaliz flex justify-between items-center">
         <span className="pl-6">Welcome {name.split(" ")[0]}</span>
         <button onClick={() => handleClick()}>
           <img
@@ -55,6 +80,13 @@ export const Home = () => {
           />
         </button>
       </header>
+      <main className="w-full">
+        <div className="w-10/12 mx-auto mt-4">
+          {payments.map((payment) => (
+            <PaymentCard props={payment} key={payment.title} />
+          ))}
+        </div>
+      </main>
     </div>
   );
 };
