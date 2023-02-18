@@ -1,14 +1,7 @@
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-import {
-  getFirestore,
-  query,
-  getDocs,
-  collection,
-  where,
-  addDoc,
-} from "firebase/firestore";
+import { getMessaging } from "firebase/messaging";
+import { getFirestore, collection, addDoc } from "firebase/firestore";
 import {
   getAuth,
   signInWithEmailAndPassword,
@@ -16,13 +9,7 @@ import {
   signOut,
   sendPasswordResetEmail,
 } from "firebase/auth";
-// import * as admin from "firebase-admin";
 
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyDpt7ZEvole66e39py_xHUjxOW_XT1o1wc",
   authDomain: "payment-reminder-59f58.firebaseapp.com",
@@ -35,9 +22,9 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
 const db = getFirestore(app);
 const auth = getAuth(app);
+const messaging = getMessaging(app);
 
 const logInWithEmailAndPassword = async (email, password) => {
   try {
@@ -87,4 +74,5 @@ export {
   registerWithEmailAndPassword,
   sendPasswordReset,
   logout,
+  messaging,
 };

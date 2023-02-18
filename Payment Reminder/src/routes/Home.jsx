@@ -1,11 +1,19 @@
 import { useState, useEffect } from "react";
 import { useAuthState } from "react-firebase-hooks/auth";
-import { query, collection, getDocs, where } from "firebase/firestore";
+import {
+  query,
+  collection,
+  getDocs,
+  where,
+  doc,
+  setDoc,
+} from "firebase/firestore";
 import { useNavigate } from "react-router-dom";
-import { auth, db, logout } from "../firebase";
+import { auth, db, logout, messaging } from "../firebase";
 import Powerbutton from "../../src/power-icon.svg";
 import { PaymentCard } from "../components/PaymentCard";
 import { AddPaymentCard } from "../components/AddPaymentCard";
+import { getToken } from "firebase/messaging";
 
 export const Home = () => {
   const [name, setName] = useState("");
@@ -14,13 +22,36 @@ export const Home = () => {
   const [user, loading, error] = useAuthState(auth);
   const navigate = useNavigate();
 
+  async function requestPermission() {
+    const permission = Notification.requestPermission();
+    if (permission === "denied") {
+      console.error("Notification permission denied");
+      return;
+    }
+    if (permission === "default") {
+      console.warn("User did not grant Permission");
+      return;
+    }
+    if (!!docId)
+      try {
+        const token = await getToken(messaging, {
+          vapidKey:
+            "BL8CAVLZ7862zeLQ2LOM1E5fxhM-WlBLYN_4pg7xRrnaIL590n6SyxX0XHiYxjwvCiraM247lyzU5cH7s1NKVqc",
+        });
+        const docRef = doc(db, `users/${docId}`);
+        const res = await setDoc(docRef, { fcmToken: token }, { merge: true });
+      } catch (error) {
+        console.error(error);
+      }
+  }
+
   const fetchUserName = async () => {
     try {
       const q = query(collection(db, "users"), where("uid", "==", user?.uid));
       const doc = await getDocs(q);
-      const data = doc.docs[0].data();
-      setName(() => data.name);
-      setDocId(() => doc.docs[0].id);
+      const data = doc.docs[0]?.data();
+      setName(() => data?.name);
+      setDocId(() => doc.docs[0]?.id);
     } catch (err) {
       console.error(err);
       alert("An error occured while fetching user data");
@@ -47,6 +78,7 @@ export const Home = () => {
 
   useEffect(() => {
     fetchUserDocs();
+    requestPermission();
   }, [docId]);
 
   useEffect(() => {
@@ -65,8 +97,8 @@ export const Home = () => {
 
   return (
     <div className="w-full min-h-screen	 absolute bg-slate-400">
-      <header className="w-full bg-slate-800 py-2 text-lg text-gray-100 capitaliz flex justify-between items-center">
-        <span className="pl-6">Welcome, {name.split(" ")[0]}</span>
+      <header className="w-full bg-slate-800 py-2 text-lg text-gray-100 capitalize flex justify-between items-center">
+        <span className="pl-6">Welcome, {name?.split(" ")[0]}</span>
         <button onClick={() => handleClick()}>
           <img
             className="my-4 mr-8"
@@ -83,18 +115,20 @@ export const Home = () => {
       </header>
       <main className="w-full mb-4">
         {payments.length > 0 ? (
-          <div className="w-10/12 mx-auto mt-4 flex gap-8 flex-wrap">
-            {payments.map((payment) => (
-              <PaymentCard
-                props={payment}
-                key={payment.id}
+          <div className="w-11/12 mt-4 mx-auto">
+            <div className="w-full mx-auto flex flex-wrap gap-8 ">
+              {payments.map((payment) => (
+                <PaymentCard
+                  props={payment}
+                  key={payment.id}
+                  fetchUserDocs={fetchUserDocs}
+                />
+              ))}
+              <AddPaymentCard
+                docId={`users/${docId}`}
                 fetchUserDocs={fetchUserDocs}
               />
-            ))}
-            <AddPaymentCard
-              docId={`users/${docId}`}
-              fetchUserDocs={fetchUserDocs}
-            />
+            </div>
           </div>
         ) : (
           <div className="w-full absolute flex justify-center mt-60">
