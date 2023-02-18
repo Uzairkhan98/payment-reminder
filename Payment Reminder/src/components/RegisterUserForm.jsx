@@ -18,7 +18,6 @@ export const RegisterUserForm = ({ setRegisterUser }) => {
 
   const registerUser = async (e) => {
     e.preventDefault();
-    console.log(nameRef.current, emailRef.current, passwordRef.current);
     if (!nameRef.current) alert("Please enter name");
     const res = await registerWithEmailAndPassword(
       nameRef.current,

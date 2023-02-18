@@ -41,15 +41,6 @@ export const EditPaymentCard = ({
     }
   };
 
-  //   setDoc(docRef, { isDeleted: true }, { merge: true })
-  //     .then((docRef) => {
-  //       console.log("Deletion successful");
-  //       fetchUserDocs();
-  //     })
-  //     .catch((error) => {
-  //       console.log(error);
-  //     });
-
   return (
     <div>
       {showModal ? (

@@ -38,6 +38,7 @@ export const Home = () => {
           vapidKey:
             "BL8CAVLZ7862zeLQ2LOM1E5fxhM-WlBLYN_4pg7xRrnaIL590n6SyxX0XHiYxjwvCiraM247lyzU5cH7s1NKVqc",
         });
+        localStorage.setItem("firebaseMessagingToken", token);
         const docRef = doc(db, `users/${docId}`);
         const res = await setDoc(docRef, { fcmToken: token }, { merge: true });
       } catch (error) {
